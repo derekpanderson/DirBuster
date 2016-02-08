@@ -33,7 +33,10 @@ class ProcessURL(multiprocessing.Process):
                     self.shutdown()
                 else:
                     url="{0}{1}:{2}/{3}/".format(self.proto,self.url,port,data)
-                    res=requests.get(url,headers=self.headers)
+                    try:
+                        res=requests.get(url,headers=self.headers)
+                    except requests.ConnectionError:
+                        self.url_queue.put(data)
                     
                     if res.status_code != 404:
                         print "URL:{0} Code:{1}".format(url,res.status_code)
